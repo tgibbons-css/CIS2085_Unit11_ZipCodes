@@ -19,17 +19,54 @@ public class Unit11_ZipCodes {
         System.out.println("Enter the zipcode to lookup: ");
         String myZip = input.nextLine();
 
+        int foundIndex = sequentialSearch(myZip);
+        //int foundIndex = binarySearch(myZip);
+
+        if (foundIndex>=0) {
+            // found the city
+            String myCity = cityNames[foundIndex];
+            System.out.println("Found the City: "+myCity);
+        } else {
+            // zip code not found 
+            System.out.println("Zipcode not found ");
+        }
+    }  // end of main
+
+    private static int sequentialSearch(String myZip) {
         // Search for the zip code
-        System.out.print("Searching . . . ");
-        for (int index = 0; index < zipCodes.length; index++) {
-            if (myZip.equals(zipCodes[index])) {
-                String myCity = cityNames[index];
-                System.out.println("Found matching Zip code : " + myCity);
+        System.out.print("Sequential Searching . . . ");
+        int index = 0;
+        while (!myZip.equals(zipCodes[index])) {
+            index++;
+        }
+        System.out.println("Found match at index : " + index);
+        return index;
+    }  // end of sequentialSearch
+    
+    private static int binarySearch(String myZip) {
+        int lowestPossibleLoc = 0;
+        int highestPossibleLoc = zipCodes.length - 1;
+
+        while (highestPossibleLoc >= lowestPossibleLoc) {
+            int middle = (lowestPossibleLoc + highestPossibleLoc) / 2;
+            if (myZip.equals(zipCodes[middle])) {
+                // myZip has been found at this index!
+                return middle;
+            } else if (myZip.compareTo(zipCodes[middle])<0) {
+                // eliminate locations >= middle
+                highestPossibleLoc = middle - 1;
+            } else {
+                // eliminate locations <= middle
+                lowestPossibleLoc = middle + 1;
             }
         }
+        // At this point, highestPossibleLoc < lowestPossibleLoc,
+        // which means that myZip is known to be not in the array.  Return
+        // a -1 to indicate that myZip could not be found in the array.
+        return -1;
+    }  // end of binarySearch
 
-    }
-
+    // ================ ignore this method that reads in the Zip Code file ====================
     private static void readCSVfile() {
         //String csvFile = "MinnesotaZipCodes.csv"; // Replace with the path to your CSV file
         String csvFile = "MinnesotaZipCodes_Sorted.csv"; // Replace with the path to your CSV file
@@ -55,13 +92,11 @@ public class Unit11_ZipCodes {
                 zipCodes[i - 1] = entry[0].trim();
                 cityNames[i - 1] = entry[1].trim();
             }
-
-            // Print the extracted data
 //            System.out.println("Zip Codes: " + String.join(", ", zipCodes));
 //            System.out.println("City Names: " + String.join(", ", cityNames));
         } catch (IOException e) {
             System.out.println("Exception - " + e.getMessage());
         }
-    }
+    }  // end of readCSVfile
 
 }
